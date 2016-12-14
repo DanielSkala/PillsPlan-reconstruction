@@ -1,7 +1,10 @@
 package com.pillsplan.revolware.pillsplan_reconstruction.data_access;
 
 /**
- * Created by Peter on 14. 12. 2016.
+ * @author Peter Grajcar
+ * 14.12.2016
+ *
+ * List of all references to Web API
  */
 
 public enum WebAPIRefs {

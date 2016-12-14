@@ -1,15 +1,13 @@
-/*******************************************************************************
- * Author: Peter Grajcar
- * 2016
- *******************************************************************************/
 package com.pillsplan.revolware.pillsplan_reconstruction.data_access;
 
 import java.util.List;
 
 /**
- * Created by Peter on 14. 12. 2016.
+ * @author Peter Grajcar
+ * 14.12.2016
+ *
+ * Abstract generic Handler class. Inherited classes are meant to handle multiple sources of data.
  */
-
 public abstract class Handler<T> {
 
     public T get(T obj) {

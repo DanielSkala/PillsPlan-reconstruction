@@ -1,9 +1,9 @@
-/*******************************************************************************
- * Author: Peter Grajcar
- * 2016
- *******************************************************************************/
 package com.pillsplan.revolware.pillsplan_reconstruction.data_access.model;
 
+/**
+ * @author Peter Grajcar
+ * 14.12.2016
+ */
 public class Message {
 
 	private String message;

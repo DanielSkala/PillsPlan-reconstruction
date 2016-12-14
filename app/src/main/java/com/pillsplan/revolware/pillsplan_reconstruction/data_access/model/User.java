@@ -1,12 +1,12 @@
-/*******************************************************************************
- * Author: Peter Grajcar
- * 2016
- *******************************************************************************/
 package com.pillsplan.revolware.pillsplan_reconstruction.data_access.model;
 
 import java.sql.Date;
 import java.sql.Timestamp;
 
+/**
+ * @author Peter Grajcar
+ * 14.12.2016
+ */
 public class User {
 
 	private String id;

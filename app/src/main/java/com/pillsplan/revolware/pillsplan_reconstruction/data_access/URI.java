@@ -4,7 +4,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Created by Peter on 14. 12. 2016.
+ * @author Peter Grajcar
+ * 14.12.2016
+ *
+ * Special URI class with template resolving capability.
  */
 
 public class URI {
@@ -21,9 +24,21 @@ public class URI {
         this.path = path;
     }
 
+    /**
+     *
+     * @param name template identifier
+     * @param value value which will replace the template
+     * @return new URI with replaced template
+     */
     public URI resolveTemplate(String name, String value) {
         return new URI(getPath().replace("{" + name + "}", value));
     }
+
+    /**
+     *
+     * @return URL Object
+     * @throws MalformedURLException
+     */
     public URL getURL () throws MalformedURLException {
         return new URL(getPath());
     }
