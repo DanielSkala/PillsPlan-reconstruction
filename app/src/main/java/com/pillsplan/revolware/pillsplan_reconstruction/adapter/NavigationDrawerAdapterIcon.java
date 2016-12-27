@@ -8,14 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.pillsplan.revolware.pillsplan_reconstruction.model.NavDrawerItem;
+import com.pillsplan.revolware.pillsplan_reconstruction.R;
 
 import java.util.Collections;
 import java.util.List;
-
-import com.pillsplan.revolware.pillsplan_reconstruction.R;
 
 public class NavigationDrawerAdapterIcon extends RecyclerView.Adapter<NavigationDrawerAdapterIcon.MyViewHolder> {
     List<NavigationDrawerAdapterIcon> data = Collections.emptyList();

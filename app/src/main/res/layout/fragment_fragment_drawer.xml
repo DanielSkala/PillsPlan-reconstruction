@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="revolware.pillsplan.activities.Fragments.FragmentDrawer">
+    tools:context="com.pillsplan.revolware.pillsplan_reconstruction.activities.FragmentDrawer">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView

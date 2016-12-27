@@ -46,8 +46,6 @@ public class FragmentDrawer extends Fragment {
 
     public static List<NavDrawerItem> getData() {
         List<NavDrawerItem> data = new ArrayList<>();
-
-
         // preparing navigation drawer items
         for (int t = 0; t < titles.length; t++) {
             NavDrawerItem navItem = new NavDrawerItem();
@@ -56,7 +54,7 @@ public class FragmentDrawer extends Fragment {
         }
         return data;
     }
-
+/*
     public static List<NavDrawerItem> getData() {
         List<NavDrawerItem> data = new ArrayList<>();
 
@@ -69,6 +67,7 @@ public class FragmentDrawer extends Fragment {
         }
         return data;
     }
+*/
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -197,3 +196,4 @@ public class FragmentDrawer extends Fragment {
     }
 
 }
+
