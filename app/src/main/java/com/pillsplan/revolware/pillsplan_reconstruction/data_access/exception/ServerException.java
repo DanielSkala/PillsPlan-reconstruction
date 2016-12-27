@@ -5,7 +5,7 @@ package com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception;
  * 20.12.2016
  */
 
-public class ServerException extends Exception {
+public abstract class ServerException extends Exception {
 
     public static final int ACCESS_DENIED_CODE = 0b00000000;
     public static final int INTERNAL_ERROR_CODE = 0b00000001;
@@ -19,4 +19,7 @@ public class ServerException extends Exception {
     public static final int INVALID_ACCOUNT_CODE = 0b00010010;
     public static final int INVALID_PASSWORD_CODE = 0b00010011;
 
+    public int getCode() {
+        return -1;
+    };
 }

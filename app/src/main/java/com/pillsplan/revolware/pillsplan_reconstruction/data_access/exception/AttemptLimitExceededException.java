@@ -12,4 +12,8 @@ public class AttemptLimitExceededException extends ServerException {
         return "Unable to login - exceeded maximal number of attempts.";
     }
 
+    @Override
+    public int getCode() {
+        return 0;
+    }
 }

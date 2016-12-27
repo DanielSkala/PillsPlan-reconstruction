@@ -5,11 +5,11 @@ import android.util.Base64;
 import android.widget.Toast;
 
 import com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception.AttemptLimitExceededException;
+import com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception.InternalErrorException;
 import com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception.InvalidCredentialsException;
 import com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception.ServerException;
 import com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception.WrongEmailException;
 import com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception.WrongPasswordException;
-import com.pillsplan.revolware.pillsplan_reconstruction.data_access.user.LoginListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,14 +29,14 @@ import java.util.StringTokenizer;
 
 /**
  * @author Peter Grajcar
- * 20.12.2016
+ * 27.12.2016
  */
 
 public class Login {
 
     private final String FILE_NAME = "jwt";
     private Context context;
-    private LoginListener listener;
+    private RequestListener listener;
 
     public Login (Context context){
         this.context = context;
@@ -104,7 +104,7 @@ public class Login {
                     case ServerException.INVALID_CREDENTIALS_CODE:
                         throw new InvalidCredentialsException();
                     default:
-                        throw new ServerException();
+                        throw new InternalErrorException();
                 }
             }
         } catch (IOException | JSONException e) {
@@ -168,7 +168,7 @@ public class Login {
         this.context = context;
     }
 
-    public void setLoginListener(LoginListener listener) {
+    public void setRequestListener(RequestListener listener) {
         this.listener = listener;
     }
 }

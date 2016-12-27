@@ -9,14 +9,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pillsplan.revolware.pillsplan_reconstruction.data_access.Login;
+import com.pillsplan.revolware.pillsplan_reconstruction.data_access.RequestListener;
 import com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception.ServerException;
 import com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception.WrongEmailException;
 import com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception.WrongPasswordException;
-import com.pillsplan.revolware.pillsplan_reconstruction.data_access.user.LoginListener;
 
 /**
  * @author Peter Grajcar
- * 20.12.2016
+ * 27.12.2016
  */
 
 public class Test extends AppCompatActivity {
@@ -39,7 +39,7 @@ public class Test extends AppCompatActivity {
                 login.login(email.getText().toString(), password.getText().toString());
             }
         });
-        login.setLoginListener(new LoginListener() {
+        login.setRequestListener(new RequestListener() {
             @Override
             public void onError(ServerException e) {
                 final String str = e.getMessage();

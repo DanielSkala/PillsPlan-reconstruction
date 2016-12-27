@@ -1,14 +1,16 @@
-package com.pillsplan.revolware.pillsplan_reconstruction.data_access.user;
+package com.pillsplan.revolware.pillsplan_reconstruction.data_access;
 
 import com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception.ServerException;
 
 /**
- * Created by Peter on 27. 12. 2016.
+ * @author Peter Grajcar
+ * 27.12.2016
  */
 
-public interface LoginListener {
+public interface RequestListener {
 
     public void onError(ServerException e);
     public void onSuccess(String token);
+
 
 }
