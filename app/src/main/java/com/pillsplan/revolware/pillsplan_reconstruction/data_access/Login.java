@@ -2,23 +2,28 @@ package com.pillsplan.revolware.pillsplan_reconstruction.data_access;
 
 import android.content.Context;
 import android.util.Base64;
+import android.widget.Toast;
 
 import com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception.AttemptLimitExceededException;
 import com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception.InvalidCredentialsException;
 import com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception.ServerException;
 import com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception.WrongEmailException;
 import com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception.WrongPasswordException;
+import com.pillsplan.revolware.pillsplan_reconstruction.data_access.user.LoginListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
@@ -31,73 +36,91 @@ public class Login {
 
     private final String FILE_NAME = "jwt";
     private Context context;
+    private LoginListener listener;
 
     public Login (Context context){
         this.context = context;
     }
 
-    //TODO: implement this method
-    public void login(String email, String password) throws ServerException{
-        HashMap<String, String> headers = new HashMap<>();
-        String auth = Base64.encodeToString(email.getBytes(), Base64.URL_SAFE) + ":" + Base64.encodeToString(password.getBytes(), Base64.URL_SAFE);
+    public void login(String email, String password) {
+
+        final HashMap < String, String > headers = new HashMap<>();
+        final String auth = Base64.encodeToString(email.getBytes(), Base64.URL_SAFE) + ":" + Base64.encodeToString(password.getBytes(), Base64.URL_SAFE);
         headers.put("Authorization", auth);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String token = null;
+                try {
+                    token = makeRequest(WebAPIRefs.LOGIN.getURI(), headers);
+                } catch (ServerException e) {
+                    if(listener != null)
+                        listener.onError(e);
+                }
+                if(listener != null)
+                    listener.onSuccess(token);
 
-        String token = makeRequest(WebAPIRefs.LOGIN.getURI(), headers);
-
-        FileOutputStream fos = null;
-        try {
-            fos = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
-            fos.write(token.getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            try {
-                fos.close();
-            } catch (IOException e) {}
-        }
+                FileOutputStream fos = null;
+                try {
+                    fos = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
+                    fos.write(token.getBytes());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }finally {
+                    try {
+                        fos.close();
+                    } catch (IOException e) {}
+                }
+                if(listener != null)
+                    listener.onSuccess(token);
+            }
+        }).start();
     }
 
     private static String makeRequest(URI uri, HashMap<String, String> headers) throws ServerException{
         HttpURLConnection connection = null;
-        InputStream stream = null;
+        BufferedReader stream = null;
         try {
-            connection = (HttpURLConnection) uri.getURL().openConnection();
+            connection = (HttpURLConnection) new URL("http://hrabovec.hopto.org:7070/api/login").openConnection();
             connection.setRequestProperty("Accept", "application/json");
             for(String key : headers.keySet())
                 connection.setRequestProperty(key, headers.get(key));
             connection.setRequestMethod("GET");
+            connection.setDoInput(true);
 
-            connection.getInputStream();
-            return connection.getHeaderField("jwt");
-        } catch (IOException e) {
-            try {
-                stream = new BufferedInputStream(connection.getErrorStream());
-                byte[] data = new byte[stream.available()];
-                stream.read(data);
-
-                JSONObject jsonObject = new JSONObject(new String(data));
-                switch(jsonObject.getString("message")){
-                    case "Wrong password.":
+            if (connection.getResponseCode() < 400) {
+                stream = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );
+                String data = new String(); String line;
+                while( (line = stream.readLine()) != null )
+                    data += line;
+                return data;
+            }else{
+                stream = new BufferedReader( new InputStreamReader( connection.getErrorStream() ) );
+                String data = new String(); String line;
+                while( (line = stream.readLine()) != null )
+                    data += line;
+                JSONObject jsonObject = new JSONObject(data);
+                switch(jsonObject.getInt("status")){
+                    case ServerException.INVALID_PASSWORD_CODE:
                         throw new WrongPasswordException();
-                    case "Account with this email does not exist.":
+                    case ServerException.INVALID_ACCOUNT_CODE:
                         throw new WrongEmailException();
-                    case "You exceeded maximal number of attempts. You will be able to try it again in 30 minutes.":
+                    case ServerException.ATTEMPT_LIMIT_EXCEEDED_CODE:
                         throw new AttemptLimitExceededException();
-                    case "Invalid credentials.":
+                    case ServerException.INVALID_CREDENTIALS_CODE:
                         throw new InvalidCredentialsException();
                 }
-
-            } catch (IOException e1) {} catch (JSONException e1) {}
+            }
+        } catch (IOException | JSONException e) {
         } finally {
-            if(connection != null)
-                connection.disconnect();
             if(stream != null)
                 try { stream.close(); } catch (IOException e) {}
+            if(connection != null)
+                connection.disconnect();
         }
         return null;
     }
 
-    //TODO: implement this method
     public void logout() {
         FileOutputStream fos = null;
         try {
@@ -112,7 +135,6 @@ public class Login {
         }
     }
 
-    //TODO: implement this method
     public String getToken() {
         FileInputStream fis = null;
         try {
@@ -130,7 +152,6 @@ public class Login {
         return null;
     }
 
-    //TODO: handle wrong token input
     public String getUserId () {
         String jwt = getToken();
         if(jwt == null)
@@ -149,5 +170,9 @@ public class Login {
 
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    public void setLoginListener(LoginListener listener) {
+        this.listener = listener;
     }
 }
