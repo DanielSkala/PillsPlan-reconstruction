@@ -46,7 +46,7 @@ public class Test extends AppCompatActivity {
                 status.post(new Runnable() {
                     @Override
                     public void run() {
-                        status.setText("Login: " + str);
+                        status.setText(status.getText().toString() + "\nERR:" + str);
                     }
                 });
             }
@@ -57,7 +57,7 @@ public class Test extends AppCompatActivity {
                 status.post(new Runnable() {
                     @Override
                     public void run() {
-                        status.setText("Login: " + str);
+                        status.setText(status.getText().toString() + "\nOK:" + str);
                     }
                 });
             }

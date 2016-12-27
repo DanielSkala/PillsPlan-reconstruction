@@ -57,8 +57,6 @@ public class Login {
                     if(listener != null)
                         listener.onError(e);
                 }
-                if(listener != null)
-                    listener.onSuccess(token);
 
                 FileOutputStream fos = null;
                 try {
@@ -71,7 +69,7 @@ public class Login {
                         fos.close();
                     } catch (IOException e) {}
                 }
-                if(listener != null)
+                if(listener != null && token != null)
                     listener.onSuccess(token);
             }
         }).start();
@@ -109,6 +107,8 @@ public class Login {
                         throw new AttemptLimitExceededException();
                     case ServerException.INVALID_CREDENTIALS_CODE:
                         throw new InvalidCredentialsException();
+                    default:
+                        throw new ServerException();
                 }
             }
         } catch (IOException | JSONException e) {
