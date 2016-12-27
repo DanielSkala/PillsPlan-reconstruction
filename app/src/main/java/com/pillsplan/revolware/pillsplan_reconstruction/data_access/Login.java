@@ -49,7 +49,7 @@ public class Login {
      */
     public void login(String email, String password) {
         final HashMap < String, String > headers = new HashMap<>();
-        final String auth = Base64.encodeToString(email.getBytes(), Base64.URL_SAFE) + ":" + Base64.encodeToString(password.getBytes(), Base64.URL_SAFE);
+        final String auth = (Base64.encodeToString(email.getBytes(), Base64.NO_PADDING) + ":" + Base64.encodeToString(password.getBytes(), Base64.NO_PADDING)).replaceAll("\n", "");
         headers.put("Authorization", auth);
 
         //HTTP Request have to run on separate thread
@@ -94,17 +94,19 @@ public class Login {
      * @return either JWT token or null
      * @throws ServerException
      */
-    private static String makeRequest(URI uri, HashMap<String, String> headers) throws ServerException{
+    private String makeRequest(URI uri, HashMap<String, String> headers) throws ServerException{
         HttpURLConnection connection = null;
         BufferedReader stream = null;
         try {
             //Set up connection
             connection = (HttpURLConnection) uri.getURL().openConnection();
             connection.setRequestProperty("Accept", "application/json");
-            for(String key : headers.keySet())
+            for(String key : headers.keySet()) {
                 connection.setRequestProperty(key, headers.get(key));
+            }
             connection.setRequestMethod("GET");
             connection.setDoInput(true);
+            connection.setUseCaches(false);
 
             //If login is successful server will return token stored in header
             //If not this method will throw error based on error code provided in response
