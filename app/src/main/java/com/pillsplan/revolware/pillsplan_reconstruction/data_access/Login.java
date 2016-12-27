@@ -42,57 +42,81 @@ public class Login {
         this.context = context;
     }
 
+    /**
+     * This method stores token gathered by HTTP request into the file
+     * @param email User's email
+     * @param password User's password
+     */
     public void login(String email, String password) {
-
         final HashMap < String, String > headers = new HashMap<>();
         final String auth = Base64.encodeToString(email.getBytes(), Base64.URL_SAFE) + ":" + Base64.encodeToString(password.getBytes(), Base64.URL_SAFE);
         headers.put("Authorization", auth);
+
+        //HTTP Request have to run on separate thread
         new Thread(new Runnable() {
             @Override
             public void run() {
                 String token = null;
                 try {
+                    //Call HTTP Request
                     token = makeRequest(WebAPIRefs.LOGIN.getURI(), headers);
                 } catch (ServerException e) {
+                    //If error occurs, listener will be called
                     if(listener != null)
                         listener.onError(e);
                 }
 
-                FileOutputStream fos = null;
-                try {
-                    fos = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
-                    fos.write(token.getBytes());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }finally {
+                //Store token in file
+                if(token != null) {
+                    FileOutputStream fos = null;
                     try {
-                        fos.close();
-                    } catch (IOException e) {}
+                        fos = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
+                        fos.write(token.getBytes());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            fos.close();
+                        } catch (IOException e) {
+                        }
+                    }
+                    if (listener != null)
+                        listener.onSuccess(token);
                 }
-                if(listener != null && token != null)
-                    listener.onSuccess(token);
             }
         }).start();
     }
 
+    /**
+     * This method provides HTTP connection to the server
+     * @param uri URI of the resource
+     * @param headers custom headers
+     * @return either JWT token or null
+     * @throws ServerException
+     */
     private static String makeRequest(URI uri, HashMap<String, String> headers) throws ServerException{
         HttpURLConnection connection = null;
         BufferedReader stream = null;
         try {
-            connection = (HttpURLConnection) new URL("http://hrabovec.hopto.org:7070/api/login").openConnection();
+            //Set up connection
+            connection = (HttpURLConnection) uri.getURL().openConnection();
             connection.setRequestProperty("Accept", "application/json");
             for(String key : headers.keySet())
                 connection.setRequestProperty(key, headers.get(key));
             connection.setRequestMethod("GET");
             connection.setDoInput(true);
 
+            //If login is successful server will return token stored in header
+            //If not this method will throw error based on error code provided in response
             if (connection.getResponseCode() < 400) {
                 return connection.getHeaderField("jwt");
             }else{
+                //Get response body
                 stream = new BufferedReader( new InputStreamReader( connection.getErrorStream() ) );
                 String data = new String(); String line;
                 while( (line = stream.readLine()) != null )
                     data += line;
+                //Make JSON out of the response and throw exception
                 JSONObject jsonObject = new JSONObject(data);
                 switch(jsonObject.getInt("status")){
                     case ServerException.INVALID_PASSWORD_CODE:
@@ -114,9 +138,13 @@ public class Login {
             if(connection != null)
                 connection.disconnect();
         }
+        //If something bad happens null will be returned
         return null;
     }
 
+    /**
+     * This method will simply clear the file in which the token is stored
+     */
     public void logout() {
         FileOutputStream fos = null;
         try {
@@ -131,6 +159,10 @@ public class Login {
         }
     }
 
+    /**
+     * This method will return JWT Token stored in file
+     * @return JWT Token
+     */
     public String getToken() {
         FileInputStream fis = null;
         try {
@@ -148,6 +180,10 @@ public class Login {
         return null;
     }
 
+    /**
+     * This method will read the token stored in file, decode it and return id of user whom the token is
+     * @return Id of user whom the stored token is
+     */
     public String getUserId () {
         String jwt = getToken();
         if(jwt == null)
