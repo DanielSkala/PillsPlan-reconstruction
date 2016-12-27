@@ -87,11 +87,7 @@ public class Login {
             connection.setDoInput(true);
 
             if (connection.getResponseCode() < 400) {
-                stream = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );
-                String data = new String(); String line;
-                while( (line = stream.readLine()) != null )
-                    data += line;
-                return data;
+                return connection.getHeaderField("jwt");
             }else{
                 stream = new BufferedReader( new InputStreamReader( connection.getErrorStream() ) );
                 String data = new String(); String line;
