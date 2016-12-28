@@ -10,7 +10,7 @@ import com.pillsplan.revolware.pillsplan_reconstruction.data_access.exception.Se
 public interface RequestListener {
 
     public void onError(ServerException e);
-    public void onSuccess(String token);
+    public void onSuccess(Object obj);
 
 
 }

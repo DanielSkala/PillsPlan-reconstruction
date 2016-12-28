@@ -52,8 +52,8 @@ public class Test extends AppCompatActivity {
             }
 
             @Override
-            public void onSuccess(String token) {
-                final String str = token;
+            public void onSuccess(Object obj) {
+                final String str = (String) obj;
                 status.post(new Runnable() {
                     @Override
                     public void run() {
